@@ -187,7 +187,7 @@ require AutoLoader;
     adjustfilecase
     adjustpathcase
 );
-$VERSION = '1.07';
+$VERSION = '1.08';
 
 
 # Preloaded methods go here.
@@ -407,7 +407,7 @@ sub save {
 	print INIFILE "[$section]\n";
 	my %hash = %{ $self->{sections}->{$section} };
 	foreach my $key (keys %{ $self->{sections}->{$section} }) {
-	    my ($quote) = $self->{registry} ? '"' : '';
+	    my ($quote) = '"' if $self->{registry};
 	    print INIFILE map "$quote$key$quote=$_\n", @{ $hash{$key} };
 	}
 	print INIFILE "\n";

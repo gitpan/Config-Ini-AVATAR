@@ -1,5 +1,9 @@
 Revision history for Perl extension Config::Ini (formerly IniFile).
 
+1.08  Sat Nov 10 12:35:24 2001
+	Suppressed perl -w warning by Jeremy Squires
+	<jsquires@opentext.com>.
+
 1.07  Sun Jun 17 08:13:17 2001
 	Fixed $quote not always initialized bug and -mapping not
 	checked bug by Brian "bfragged" Graham
