@@ -1,5 +1,10 @@
 Revision history for Perl extension Config::Ini (formerly IniFile).
 
+1.07  Sun Jun 17 08:13:17 2001
+	Fixed $quote not always initialized bug and -mapping not
+	checked bug by Brian "bfragged" Graham
+	<brian.graham@centrelink.gov.au>.
+
 1.06  Wed Jan 10 04:59:03 2001
 	Allow disabling comment stripping by specifying '' as
 	delimiter.

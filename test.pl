@@ -261,7 +261,7 @@ Configured=1
 GSversion=550
 Version=2.7
 Language=en
-GhostscriptDLL=C:\\PROGRAM FILES\GSTOOLS\\gs5.50\\gsdll32.dll
+GhostscriptDLL=C:\\PROGRAM FILES\\GSTOOLS\\gs5.50\\gsdll32.dll
 GhostscriptInclude=C:\\PROGRAM FILES\\GSTOOLS\\gs5.50;C:\\PROGRAM FILES\\GSTOOLS\\gs5.50\\fonts
 
 [Measure]

@@ -187,7 +187,7 @@ require AutoLoader;
     adjustfilecase
     adjustpathcase
 );
-$VERSION = '1.06';
+$VERSION = '1.07';
 
 
 # Preloaded methods go here.
@@ -407,7 +407,7 @@ sub save {
 	print INIFILE "[$section]\n";
 	my %hash = %{ $self->{sections}->{$section} };
 	foreach my $key (keys %{ $self->{sections}->{$section} }) {
-	    my ($quote) = '"' if ($self->{registry});
+	    my ($quote) = $self->{registry} ? '"' : '';
 	    print INIFILE map "$quote$key$quote=$_\n", @{ $hash{$key} };
 	}
 	print INIFILE "\n";
@@ -579,15 +579,24 @@ sub get {
 	# Return the associated value/values.
 	my @value = @{ $self->{sections}->{$section}->{$key} };
 
-	if ($args{-mapping} eq 'single'
-	    or ($#value == 0 and $args{-mapping} ne 'multiple')) {
-	    # The key is singly-valued, return the only value.
-	    if ($self->{'registry'}) { return decode_reg_value($value[0]); }
-	    return $value[0];
+	if (!defined $args{-mapping}) {
+	    if ($#value == 0) {
+		# The key is singly-valued, return the only value.
+		if ($self->{'registry'}) { return decode_reg_value($value[0]); }
+		return $value[0];
+	    } else {
+		# The key is multi-valued, return all of them in an array.
+		return @value;
+	    }
 	} else {
-	    # The key is multi-valued, return all of them in an array.
-	    return @value;
-	}
+	    if ($args{-mapping} eq 'single') {
+		if ($self->{'registry'}) { return decode_reg_value($value[0]); }
+		return $value[0];
+	    } elsif ($args{-mapping} eq 'multiple') {
+		# The key is multi-valued, return all of them in an array.
+		return @value;
+	    }
+	}	
     } else {
 	return undef;
     }
