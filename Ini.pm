@@ -2,8 +2,8 @@ package Config::Ini;
 
 =head1 NAME
 
-Config::Ini - Perl interface to MS-Windows style, Unreal style .ini files
-    and MS-Windows registry files.
+Config::Ini - Perl interface to MS-Windows registry files, Windows .ini
+    and Unreal style .ini files.
 
 =cut
 
@@ -54,11 +54,16 @@ and contain no high-ASCII nor control character.
 On a line, everything after the semicolon (;) is ignored.  Backslash (\)
 right before the end of line is treated as line continuation marker and
 the contents of the next line will be appended after stripping off
-preceeding whitespaces.  Comment marker takes precedence over line
+preceeding whitespaces.  Comment delimiter takes precedence over line
 continuation marker.  Spaces surrounding the delimiting equation sign
 are stripped.  If there are more than one equation sign on a line the
 first one is treated as the delimiter, the rest of them are considered
 part of the value.
+
+The comment delimiter can be specified during calls to B<new> or
+B<open> via the B<-commentdelim> option as a regular expression.  If no
+comment stripping is desired supply the empty string ('') as the
+argument.
 
 Specifcations of section, key and value are to be supplied to methods
 via an array reference containing just a section name, or the section
@@ -154,7 +159,7 @@ The registry file contains:
     "ListOfStr"=hex(7):73,74,72,31,00,73,74,72,32,00,73,74,\
     72,33,00,00
 
-Note that this example contains a line continuation character "\".
+Note that this example contains a line continuation marker "\".
 
 =back
 
@@ -182,7 +187,7 @@ require AutoLoader;
     adjustfilecase
     adjustpathcase
 );
-$VERSION = '1.04';
+$VERSION = '1.06';
 
 
 # Preloaded methods go here.
@@ -206,9 +211,17 @@ sub new {
     # Use an indexed hash to preserve the order.
     tie %{ $self->{sections} }, 'Tie::IxHash';
 
+    if (defined $args{-commentdelim}) {
+	$self->{commentdelim} = $args{-commentdelim};
+    } else {
+	$self->{commentdelim} = ";";
+    }
+
     if (defined $file) {
 	$self->{file} = $file;
-	$self->open($file, -umod => $args{-umod}) or return undef;
+	$self->open($file, -umod => $args{-umod},
+	    -commentdelim => $self->{commentdelim})
+	    or return undef;
     }
 
     return $self;
@@ -245,6 +258,9 @@ sub open {
 	close INIFILE;
 	open INIFILE, "<$file" or return 0;
     }
+
+    $self->{commentdelim} = $args{-commentdelim}
+	if (defined $args{-commentdelim});
 
     $self->{lastpos} = 0;
     my $section;
@@ -307,7 +323,10 @@ sub open {
 	}
 
 	# Strip comments.
-	s/;.*//;
+	unless ($self->{commentdelim} eq '') {
+	    my $delim = $self->{commentdelim};
+	    s/\s*$delim.*//;
+	}
 
 	if (!length) {
 	    undef $line_continuing;
@@ -423,8 +442,8 @@ sub file {
 
 =item B<lastpos(self)>
 
-Set or retrieve the the byte offset into the file immediately after
-the last line that conforms to the .ini format.
+Set or retrieve the byte offset into the file immediately after the last
+line that conforms to the .ini format.
 
 =cut
 
@@ -459,6 +478,24 @@ sub registry {
     }
 
     return $self->{registry};
+}
+
+# ----------------------------------------------------------------
+
+=item B<commentdelim(self)>
+
+Set or retrieve the comment delimiter.
+
+=cut
+
+sub commentdelim {
+    my ($self, $commentdelim) = @_;
+
+    if (defined $commentdelim) {
+	$self->{commentdelim} = $commentdelim;
+    }
+
+    return $self->{commentdelim};
 }
 
 # ----------------------------------------------------------------

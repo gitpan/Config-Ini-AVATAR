@@ -1,5 +1,12 @@
 Revision history for Perl extension Config::Ini (formerly IniFile).
 
+1.06  Wed Jan 10 04:59:03 2001
+	Allow disabling comment stripping by specifying '' as
+	delimiter.
+
+1.05  Tue Jan  9 05:20:12 2001
+	Configurable comment delimiter by DEQ <deq@oct.zaq.ne.jp>.
+
 1.04  Wed Dec 13 07:11:30 2000
 	Minor bugfix from Fulko Hew <fulko@wecan.com>.
 	Package name changed to Config::Ini.
